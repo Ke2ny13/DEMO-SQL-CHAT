@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import generate from './api.js';
 
 const app = express();
 app.use(express.json());
@@ -11,9 +12,14 @@ app.get('/', (req, res) => {
 });
 
 app.post('/generate', async(req, res) => {
-    const {queryDescription} = req.body;
+    try {const {queryDescription} = req.body;
     console.log(queryDescription);
-    res.json({answer: "The answer goes here"});
+    const sqlQuery = await generate(queryDescription);
+    res.json({answer: sqlQuery});
+    } catch (error) {
+        console.log(error);
+        res.json({sqlQuery: 'Great question. I seem to be having probleme answering. Please ask again.'});
+    }
 })
 
 const PORT = process.env.PORT || 3005;
